@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @NoArgsConstructor
@@ -20,8 +19,8 @@ public class AccessibilityInterval implements Comparable<AccessibilityInterval> 
     private LocalDateTime start;
     @Setter
     private LocalDateTime end;
-    private final AtomicInteger okCount = new AtomicInteger();
-    private final AtomicInteger failCount = new AtomicInteger();
+    private int okCount;
+    private int failCount;
     @Getter
     private double accessibilityLevel;
 
@@ -31,16 +30,16 @@ public class AccessibilityInterval implements Comparable<AccessibilityInterval> 
         this.accessibilityLevel = accessibilityLevel;
     }
 
-    // including 0% if okCount.get() == 0
+    // accepting 0% if okCount == 0
     private void calculateAccessibilityLevel() {
-        accessibilityLevel = 100d * okCount.get() / (okCount.get() + failCount.get());
+        accessibilityLevel = 100d * okCount / (okCount + failCount);
     }
 
     public void incCount(boolean isFailed) {
         if (isFailed) {
-            failCount.incrementAndGet();
+            failCount++;
         } else {
-            okCount.incrementAndGet();
+            okCount++;
         }
     }
 
@@ -52,8 +51,8 @@ public class AccessibilityInterval implements Comparable<AccessibilityInterval> 
             setEnd(Stream.of(end, interval.end).filter(Objects::nonNull)
                     .max(Comparator.naturalOrder())
                     .orElse(end));
-            okCount.addAndGet(interval.okCount.get());
-            failCount.addAndGet(interval.failCount.get());
+            okCount += interval.okCount;
+            failCount += interval.failCount;
             calculateAccessibilityLevel();
         }
 
