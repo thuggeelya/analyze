@@ -5,6 +5,7 @@ import ru.thuggeelya.exceptions.AccessLogMatcherException;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,16 +28,15 @@ class AnalyzerTest {
             e.printStackTrace();
         }
 
-        List<AccessibilityInterval> expectedList = List.of(
-                new AccessibilityInterval(
+        List<AccessibilityInterval> expectedList = new ArrayList<>();
+        expectedList.add(new AccessibilityInterval(
                         LocalDateTime.of(2017, 6, 14, 16, 47, 2),
                         LocalDateTime.of(2017, 6, 14, 16, 47, 9),
-                        50.0d),
-                new AccessibilityInterval(
+                        50.0d));
+        expectedList.add(new AccessibilityInterval(
                         LocalDateTime.of(2017, 6, 14, 16, 47, 12),
                         LocalDateTime.of(2017, 6, 14, 16, 48, 52),
-                        95.0d)
-        );
+                        95.0d));
         assertEquals(expectedList, analyzer.getFailIntervals());
     }
 }
